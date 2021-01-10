@@ -8,10 +8,10 @@ function Quiz(props: quizProps) {
             <Choice
                 key={choice.content}
                 answerContent={choice.content}
+                // correct or incorrect
                 answerType={choice.type}
                 answer={props.answer}
                 id={props.questionId}
-                disabled={props.disabled}
                 onAnswerSelected={props.onAnswerSelected}
             />
         );
@@ -19,7 +19,7 @@ function Quiz(props: quizProps) {
     return (
         <div className="quiz">
             <QuestionCount
-                counter={props.questionId}
+                questionId={props.questionId}
                 total={props.questionTotal}
             />
             <Question content={props.question} />
@@ -35,11 +35,9 @@ function Quiz(props: quizProps) {
 type quizProps = {
     answer: string,
     answerOptions: object[],
-    counter: number,
     question: string,
     questionId: number,
     questionTotal: number,
-    disabled:boolean,
     onAnswerSelected: (event:any) => void
 };
 

@@ -1,19 +1,17 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import  { Component } from 'react';
+
 import './App.css';
-import Question from './components/Question'
 import Quiz from './components/Quiz'
 import quizQuestions from './api/quizQuestions';
 import Result from './components/Results';
 interface IProps {
 }
 interface IState{
-  counter: number,
   questionId: number,
   question: string,
   answerOptions: object[],
   answer: string,
-  answersCount: object,
+  correctAnswers:number,
   result: string
 }
 class App extends Component<IProps, IState> {
@@ -21,12 +19,11 @@ class App extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-      counter: 0,
-      questionId: 1,
+      questionId: 0,
       question: '',
       answerOptions: [],
+      correctAnswers: 0,
       answer: '',
-      answersCount: {},
       result: ''
     };
     this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
@@ -60,63 +57,55 @@ class App extends Component<IProps, IState> {
     return array;
   };
 
-  setUserAnswer(answer:string) {
-    this.setState((state) => ({
-      answersCount: {
-        ...state.answersCount,
-        // [answer]: (state.answersCount[answer] || 0) + 1
-      },
-      answer: answer
-    }));
-  }
+
   
   setNextQuestion() {
-    const counter = this.state.counter + 1;
+ 
     const questionId = this.state.questionId + 1;
     this.setState({
-      counter: counter,
       questionId: questionId,
-      question: quizQuestions[counter].question,
-      answerOptions: quizQuestions[counter].answers,
+      question: quizQuestions[questionId].question,
+      answerOptions: quizQuestions[questionId].answers,
       answer: ''
     });
   }
+  setUserAnswer(answer:string) {
+    this.setState(() => ({
+      answer: answer
+    }));
+  }
 
   handleAnswerSelected(event:Event) {
-    console.log("Handle answer called")
-    const target = event.target as HTMLTextAreaElement;
 
+    const target = event.target as HTMLTextAreaElement;
+    console.log(target.value + " selected")
+    if (target.value === "correct"){
+      this.setState((prevState) => ({
+        correctAnswers: prevState.correctAnswers +1
+      }));
+    }
     this.setUserAnswer(target.value);
-    if (this.state.questionId < quizQuestions.length) {
+
+    if (this.state.questionId + 1 < quizQuestions.length) {
         setTimeout(() => this.setNextQuestion(), 300);
       } else {
-        setTimeout(() => this.setResults(this.getResults()), 300);
+        setTimeout(() => this.getResults(), 300);
       }
   }
-  setResults (result:string[]) {
-    if (result.length === 1) {
-      this.setState({ result: result[0] });
-    } else {
-      this.setState({ result: 'Undetermined' });
-    }
-  }
+
   getResults() {
-    const answersCount = this.state.answersCount;
-    const answersCountKeys = Object.keys(answersCount);
-    // const answersCountValues = answersCountKeys.map((key) => answersCount[key]);
-    // const maxAnswerCount = Math.max.apply(null, answersCountValues);
-    return ["Passed"]
-    // return answersCountKeys.filter((key) => answersCount[key] === maxAnswerCount);
+    this.setState(() => ({
+      result: this.state.correctAnswers + " correct out of " + quizQuestions.length
+    }));
+    // return this.state.correctAnswers + " correct out of " + quizQuestions.length
   }
   renderQuiz() {
     return (
       <Quiz
         answer={this.state.answer}
         answerOptions={this.state.answerOptions}
-        counter={this.state.counter}
-        questionId={this.state.questionId}
+        questionId={this.state.questionId + 1}
         question={this.state.question}
-        disabled={false}
         questionTotal={quizQuestions.length}
         onAnswerSelected={this.handleAnswerSelected}
       />
@@ -131,25 +120,10 @@ class App extends Component<IProps, IState> {
   render() {
     return (
       <div className="App">
-        {/* <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header> */}
         {this.state.result ? this.renderResult() : this.renderQuiz()}
       </div>
     );
   }
-
 }
 
 export default App;

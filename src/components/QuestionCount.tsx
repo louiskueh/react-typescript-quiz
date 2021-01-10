@@ -2,13 +2,13 @@
 function QuestionCount(props: questionCountProps) {
   return (
     <div className="questionCount">
-      Question <span>{props.counter}</span> of <span>{props.total}</span>
+      Question <span>{props.questionId}</span> of <span>{props.total}</span>
     </div>
   );
 }
 
 type questionCountProps = {
-  counter: number,
+  questionId: number,
   total: number
 };
 

@@ -6,13 +6,12 @@ function Choice(props:choiceProps) {
           type="radio"
           className="radioCustomButton"
           name="radioGroup"
-          checked={props.answerType === props.answer}
+          // checked={props.answerType === props.answer}
           id={props.answerType}
           value={props.answerType}
-          disabled={props.disabled}
           onChange={props.onAnswerSelected}
         />
-        <label className="radioCustomLabel" htmlFor={props.answerType}>
+        <label className="radioCustomLabel" >
           {props.answerContent}
         </label>
       </li>
@@ -24,7 +23,6 @@ function Choice(props:choiceProps) {
     answerContent: string,
     answer: string,
     id:number,
-    disabled: boolean,
     onAnswerSelected: (event:any) => void
   };
   
