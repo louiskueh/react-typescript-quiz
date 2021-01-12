@@ -39,6 +39,7 @@ class App extends Component<IProps, IState> {
       answerOptions: shuffledAnswerOptions[0],
     });
   }
+  
   shuffleArray(array: object[]) {
     var currentIndex = array.length,
       temporaryValue,
@@ -78,13 +79,13 @@ class App extends Component<IProps, IState> {
     
     const value = event.currentTarget.value
     console.log((value))
-    // console.log(JSON.stringify(event) + " selected");
 
     if (value === "correct") {
       this.setState((prevState) => ({
         correctAnswers: prevState.correctAnswers + 1,
       }));
     }
+
     this.setUserAnswer(value);
 
     if (this.state.questionId + 1 < quizQuestions.length) {

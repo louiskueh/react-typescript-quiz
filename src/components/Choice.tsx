@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import _uniqueId from "lodash/uniqueId";
 
 function Choice(props: choiceProps) {

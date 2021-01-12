@@ -1,4 +1,3 @@
-
 function QuestionCount(props: questionCountProps) {
   return (
     <div className="questionCount">
@@ -8,8 +7,8 @@ function QuestionCount(props: questionCountProps) {
 }
 
 type questionCountProps = {
-  questionId: number,
-  total: number
+  questionId: number;
+  total: number;
 };
 
 export default QuestionCount;

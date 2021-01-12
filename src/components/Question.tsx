@@ -1,11 +1,9 @@
-function Question(props : questionProps) {
-  return (
-    <h2 className="question">{props.content}</h2>
-  );
+function Question(props: questionProps) {
+  return <h2 className="question">{props.content}</h2>;
 }
 
 type questionProps = {
-  content: string,
+  content: string;
 };
 
 export default Question;
