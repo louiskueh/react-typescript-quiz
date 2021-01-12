@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { ChangeEvent, Component } from "react";
 
 import "./App.css";
 import Quiz from "./components/Quiz";
@@ -74,15 +74,18 @@ class App extends Component<IProps, IState> {
     }));
   }
 
-  handleAnswerSelected(event: Event) {
-    const target = event.target as HTMLInputElement;
-    console.log(target.value + " selected");
-    if (target.value === "correct") {
+  handleAnswerSelected(event:  React.ChangeEvent<HTMLInputElement>) {
+    
+    const value = event.currentTarget.value
+    console.log((value))
+    // console.log(JSON.stringify(event) + " selected");
+
+    if (value === "correct") {
       this.setState((prevState) => ({
         correctAnswers: prevState.correctAnswers + 1,
       }));
     }
-    this.setUserAnswer(target.value);
+    this.setUserAnswer(value);
 
     if (this.state.questionId + 1 < quizQuestions.length) {
       setTimeout(() => this.setNextQuestion(), 300);
