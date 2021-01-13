@@ -122,8 +122,8 @@ class App extends Component<IProps, IState> {
 
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
+      <div>
+        <div className="quizHeader">
           <h2>React Quiz</h2>
         </div>
         {this.state.result ? this.renderResult() : this.renderQuiz()}
