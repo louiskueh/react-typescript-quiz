@@ -39,7 +39,7 @@ class App extends Component<IProps, IState> {
       answerOptions: shuffledAnswerOptions[0],
     });
   }
-  
+
   shuffleArray(array: object[]) {
     var currentIndex = array.length,
       temporaryValue,
@@ -75,10 +75,9 @@ class App extends Component<IProps, IState> {
     }));
   }
 
-  handleAnswerSelected(event:  React.ChangeEvent<HTMLInputElement>) {
-    
-    const value = event.currentTarget.value
-    console.log((value))
+  handleAnswerSelected(event: React.ChangeEvent<HTMLInputElement>) {
+    const value = event.currentTarget.value;
+    console.log(value);
 
     if (value === "correct") {
       this.setState((prevState) => ({
@@ -89,9 +88,9 @@ class App extends Component<IProps, IState> {
     this.setUserAnswer(value);
 
     if (this.state.questionId + 1 < quizQuestions.length) {
-      setTimeout(() => this.setNextQuestion(), 300);
+      setTimeout(() => this.setNextQuestion(), 200);
     } else {
-      setTimeout(() => this.getResults(), 300);
+      setTimeout(() => this.getResults(), 200);
     }
   }
 
@@ -104,14 +103,16 @@ class App extends Component<IProps, IState> {
 
   renderQuiz() {
     return (
-      <Quiz
-        answer={this.state.answer}
-        answerChoices={this.state.answerOptions}
-        questionId={this.state.questionId + 1}
-        question={this.state.question}
-        questionTotal={quizQuestions.length}
-        onAnswerSelected={this.handleAnswerSelected}
-      />
+      <div className="container">
+        <Quiz
+          answer={this.state.answer}
+          answerChoices={this.state.answerOptions}
+          questionId={this.state.questionId + 1}
+          question={this.state.question}
+          questionTotal={quizQuestions.length}
+          onAnswerSelected={this.handleAnswerSelected}
+        />
+      </div>
     );
   }
 
@@ -122,6 +123,9 @@ class App extends Component<IProps, IState> {
   render() {
     return (
       <div className="App">
+        <div className="App-header">
+          <h2>React Quiz</h2>
+        </div>
         {this.state.result ? this.renderResult() : this.renderQuiz()}
       </div>
     );
