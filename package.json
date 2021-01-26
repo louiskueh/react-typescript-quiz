@@ -25,11 +25,13 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "server": "node-env-run server --exec nodemon",
+    "serverLocal": "node-env-run server --exec nodemon",
+    "server": "node server",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "run-p server start"
+    "dev": "run-p serverLocal start",
+    "deploy": "run-p server build"
   },
   "eslintConfig": {
     "extends": [
