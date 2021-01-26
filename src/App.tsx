@@ -1,9 +1,45 @@
-import { ChangeEvent, Component } from "react";
-
+import { Component } from "react";
 import "./App.css";
 import Quiz from "./components/Quiz";
 import quizQuestions from "./api/quizQuestions";
 import Result from "./components/Results";
+import axios from "axios";
+
+const API_KEY = process.env.API_KEY
+const allItemsQuery = {
+  query: `
+    query {
+      quiz {
+        _id
+        name
+        questions {
+          question
+        }
+      }
+    }
+    `
+}
+// Get a valid Realm user access token to authenticate requests
+async function GetCredsKey() {
+  let res = await axios.post('https://realm.mongodb.com/api/client/v2.0/app/react-quiz-app-yyduf/auth/providers/api-key/login', {
+    key:API_KEY ,
+  })
+
+  return res.data
+}
+
+async function getQuiz(token:string) {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + token
+  }
+  let res = await axios.post('https://realm.mongodb.com/api/client/v2.0/app/react-quiz-app-yyduf/graphql', allItemsQuery,{
+    headers: headers
+  })
+  return res.data
+}
+
+// Create a component that displays the given user's details
 interface IProps {}
 interface IState {
   questionId: number;
@@ -28,9 +64,16 @@ class App extends Component<IProps, IState> {
     this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
   }
 
-  componentDidMount() {
+
+//apikey:"M9c2PgoUsmY98QJe0WfQJ3zUhqXmuxBOkvsVZK8s0Aadg1X4eJV6lQnMYdp7xdcR"
+
+  async componentDidMount() {
+    const response = await GetCredsKey()
+    console.log (response)
+    const graphQLData = await getQuiz(response.access_token)
+    console.log(graphQLData)
     // Shuffle the answers to each question
-    const shuffledAnswerOptions = quizQuestions.map((question) =>
+    const shuffledAnswerOptions = quizQuestions.map((question: { answers: object[]; }) =>
       this.shuffleArray(question.answers)
     );
 
