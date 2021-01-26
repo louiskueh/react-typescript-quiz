@@ -1,47 +1,12 @@
 import { Component } from "react";
 import "./App.css";
 import Quiz from "./components/Quiz";
-import quizQuestions from "./api/quizQuestions";
 import Result from "./components/Results";
-import axios from "axios";
-
-const API_KEY = process.env.API_KEY
-const allItemsQuery = {
-  query: `
-    query {
-      quiz {
-        _id
-        name
-        questions {
-          question
-        }
-      }
-    }
-    `
-}
-// Get a valid Realm user access token to authenticate requests
-async function GetCredsKey() {
-  let res = await axios.post('https://realm.mongodb.com/api/client/v2.0/app/react-quiz-app-yyduf/auth/providers/api-key/login', {
-    key:API_KEY ,
-  })
-
-  return res.data
-}
-
-async function getQuiz(token:string) {
-  const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + token
-  }
-  let res = await axios.post('https://realm.mongodb.com/api/client/v2.0/app/react-quiz-app-yyduf/graphql', allItemsQuery,{
-    headers: headers
-  })
-  return res.data
-}
 
 // Create a component that displays the given user's details
-interface IProps {}
+interface IProps { }
 interface IState {
+  quizQuestions: any,
   questionId: number;
   question: string;
   answerOptions: object[];
@@ -54,6 +19,7 @@ class App extends Component<IProps, IState> {
     super(props);
 
     this.state = {
+      quizQuestions: [],
       questionId: 0,
       question: "",
       answerOptions: [],
@@ -64,23 +30,25 @@ class App extends Component<IProps, IState> {
     this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
   }
 
-
-//apikey:"M9c2PgoUsmY98QJe0WfQJ3zUhqXmuxBOkvsVZK8s0Aadg1X4eJV6lQnMYdp7xdcR"
-
   async componentDidMount() {
-    const response = await GetCredsKey()
-    console.log (response)
-    const graphQLData = await getQuiz(response.access_token)
-    console.log(graphQLData)
-    // Shuffle the answers to each question
-    const shuffledAnswerOptions = quizQuestions.map((question: { answers: object[]; }) =>
-      this.shuffleArray(question.answers)
-    );
+    fetch(`/quiz`)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          quizQuestions: data.data.quiz.questions
+        })
+      const shuffledAnswerOptions = this.state.quizQuestions.map((question: { answers: object[]; }) =>
+        this.shuffleArray(question.answers)
+      );
 
-    this.setState({
-      question: quizQuestions[0].question,
-      answerOptions: shuffledAnswerOptions[0],
-    });
+      this.setState({
+        question: this.state.quizQuestions[0].question,
+        answerOptions: shuffledAnswerOptions[0],
+      });
+      });
+
+ 
+
   }
 
   shuffleArray(array: object[]) {
@@ -107,8 +75,8 @@ class App extends Component<IProps, IState> {
     const questionId = this.state.questionId + 1;
     this.setState({
       questionId: questionId,
-      question: quizQuestions[questionId].question,
-      answerOptions: quizQuestions[questionId].answers,
+      question: this.state.quizQuestions[questionId].question,
+      answerOptions: this.state.quizQuestions[questionId].answers,
       answer: "",
     });
   }
@@ -130,7 +98,7 @@ class App extends Component<IProps, IState> {
 
     this.setUserAnswer(value);
 
-    if (this.state.questionId + 1 < quizQuestions.length) {
+    if (this.state.questionId + 1 < this.state.quizQuestions.length) {
       setTimeout(() => this.setNextQuestion(), 200);
     } else {
       setTimeout(() => this.getResults(), 200);
@@ -140,7 +108,7 @@ class App extends Component<IProps, IState> {
   getResults() {
     this.setState(() => ({
       result:
-        this.state.correctAnswers + " correct out of " + quizQuestions.length,
+        this.state.correctAnswers + " correct out of " + this.state.quizQuestions.length,
     }));
   }
 
@@ -152,7 +120,7 @@ class App extends Component<IProps, IState> {
           answerChoices={this.state.answerOptions}
           questionId={this.state.questionId + 1}
           question={this.state.question}
-          questionTotal={quizQuestions.length}
+          questionTotal={this.state.quizQuestions.length}
           onAnswerSelected={this.handleAnswerSelected}
         />
       </div>
