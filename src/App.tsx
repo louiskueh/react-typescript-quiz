@@ -2,6 +2,7 @@ import { Component } from "react";
 import "./App.css";
 import Quiz from "./components/Quiz";
 import Result from "./components/Results";
+import ReactLoading from "react-loading";
 
 // Create a component that displays the given user's details
 interface IProps { }
@@ -11,6 +12,7 @@ interface IState {
   question: string;
   answerOptions: object[];
   answer: string;
+  done: boolean,
   correctAnswers: number;
   result: string;
 }
@@ -20,6 +22,7 @@ class App extends Component<IProps, IState> {
 
     this.state = {
       quizQuestions: [],
+      done: false,
       questionId: 0,
       question: "",
       answerOptions: [],
@@ -37,18 +40,16 @@ class App extends Component<IProps, IState> {
         this.setState({
           quizQuestions: data.data.quiz.questions
         })
-      const shuffledAnswerOptions = this.state.quizQuestions.map((question: { answers: object[]; }) =>
-        this.shuffleArray(question.answers)
-      );
+        const shuffledAnswerOptions = this.state.quizQuestions.map((question: { answers: object[]; }) =>
+          this.shuffleArray(question.answers)
+        );
 
-      this.setState({
-        question: this.state.quizQuestions[0].question,
-        answerOptions: shuffledAnswerOptions[0],
-      });
-      });
-
- 
-
+        this.setState({
+          question: this.state.quizQuestions[0].question,
+          answerOptions: shuffledAnswerOptions[0],
+          done:true
+        });
+      })
   }
 
   shuffleArray(array: object[]) {
@@ -133,12 +134,23 @@ class App extends Component<IProps, IState> {
 
   render() {
     return (
+
       <div>
         <div className="quizHeader">
           <h2>React Quiz</h2>
         </div>
-        {this.state.result ? this.renderResult() : this.renderQuiz()}
+        {this.state.done? (
+          <div>
+            {this.state.result ? this.renderResult() : this.renderQuiz()}
+          </div>
+
+        ) : (<div className="loading">
+          <ReactLoading type={"bars"} color={"#1F2430"} />
+        </div>)}
+
+
       </div>
+
     );
   }
 }

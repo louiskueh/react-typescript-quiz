@@ -2,7 +2,7 @@
 function Result(props:resultProps) {
   return (
     <div className="result">
-      You prefer <strong>{props.quizResult}</strong>!
+      You got <strong>{props.quizResult}</strong>!
     </div>
   );
 }

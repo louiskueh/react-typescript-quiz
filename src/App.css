@@ -4,3 +4,8 @@
   color: white;
   text-align: center;
 }
+.loading{
+  display: flex;   
+  justify-content: center;
+  padding:10rem
+}
