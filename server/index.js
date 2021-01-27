@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const pino = require('express-pino-logger')();
+const serverless = require('serverless-http');
 const axios = require('axios')
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -54,6 +55,7 @@ app.get('/quiz', async (req, res) => {
 });
 
 app.listen(3001, () =>
-  console.log('Express server is running on localhost:3001')
+  console.log('Express server is running on port 3001')
 );
 
+module.exports.handler = serverless(app);
