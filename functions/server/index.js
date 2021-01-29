@@ -1,12 +1,15 @@
 /* Express App */
+const path = require('path');
+
+require('dotenv').config({ path:  path.resolve(".env") });
+
+
 import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import axios from 'axios'
-const AWS = require('aws-sdk')
-const Lambda = new AWS.Lambda()
 
-// Set router base path for local dev
+
 const API_KEY = process.env.API_KEY
 const allItemsQuery = {
   query: `
@@ -28,21 +31,16 @@ const allItemsQuery = {
 
 // Get a valid Realm user access token to authenticate requests
 async function getAuthToken() {
-  try {
+  console.log("API KEY IS " + API_KEY)
+  console.log("Env is " + process.env.NODE_ENV)
     let res = await axios.post('https://realm.mongodb.com/api/client/v2.0/app/react-quiz-app-yyduf/auth/providers/api-key/login', {
       key: API_KEY,
     })
 
     return res.data
-  } catch (err) {
-    console.error('So this happened:', err);
-    return err;
-  }
-
 }
 
 async function getQuiz(token) {
-  try {
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + token
@@ -51,10 +49,6 @@ async function getQuiz(token) {
       headers: headers
     })
     return res.data
-  } catch (err) {
-    console.error('So this happened:', err);
-    return err;
-  }
 }
 export default function expressApp(functionName) {
   const app = express()
@@ -134,12 +128,17 @@ export default function expressApp(functionName) {
   })
 
   router.get('/quiz', async (req, res) => {
-
-    const token = await Lambda.invoke(getAuthToken()).promise()
+    try {
+    const token = await getAuthToken()
     console.log(token)
-    const graphQLData = await Lambda.invoke(getQuiz(token.access_token)).promise()
+    const graphQLData = await getQuiz(token.access_token)
     console.log(graphQLData)
     res.send(graphQLData);
+    // res.send("hello")
+  } catch (err) {
+    console.log(err);
+  }
+
   });
 
   // Setup routes
