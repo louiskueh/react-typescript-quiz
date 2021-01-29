@@ -34,7 +34,7 @@ class App extends Component<IProps, IState> {
   }
 
   async componentDidMount() {
-    fetch(`/quiz`)
+    fetch("/.netlify/functions/serverless-http/quiz")
       .then(response => response.json())
       .then(data => {
         this.setState({

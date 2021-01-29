@@ -148,15 +148,15 @@ export default function expressApp(functionName) {
   router.use(cors())
   router.use(bodyParser.json())
   router.use(bodyParser.urlencoded({ extended: true }))
-  const { createProxyMiddleware } = require('http-proxy-middleware');
+  // const { createProxyMiddleware } = require('http-proxy-middleware');
 
-  app.use(createProxyMiddleware('/.netlify/functions',
-    {
-      target: 'http://localhost:9000', "pathRewrite": {
-        "^/\\.netlify/functions": ""
-      }
-    }
-  ));
+  // app.use(createProxyMiddleware('/.netlify/functions',
+  //   {
+  //     target: 'http://localhost:9000', "pathRewrite": {
+  //       "^/\\.netlify/functions": ""
+  //     }
+  //   }
+  // ));
 
   return app
 }
