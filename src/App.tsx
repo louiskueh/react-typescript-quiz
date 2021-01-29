@@ -10,6 +10,7 @@ interface IState {
   quizQuestions: any,
   questionId: number;
   question: string;
+  title: string,
   answerOptions: object[];
   answer: string;
   done: boolean,
@@ -22,6 +23,7 @@ class App extends Component<IProps, IState> {
 
     this.state = {
       quizQuestions: [],
+      title:"",
       done: false,
       questionId: 0,
       question: "",
@@ -34,11 +36,13 @@ class App extends Component<IProps, IState> {
   }
 
   async componentDidMount() {
-    fetch(`/quiz`)
+    fetch("/.netlify/functions/serverless-http/quiz")
       .then(response => response.json())
       .then(data => {
+        console.log(data)
         this.setState({
-          quizQuestions: data.data.quiz.questions
+          quizQuestions: data.data.quiz.questions,
+          title: data.data.quiz.name
         })
         const shuffledAnswerOptions = this.state.quizQuestions.map((question: { answers: object[]; }) =>
           this.shuffleArray(question.answers)
@@ -137,7 +141,7 @@ class App extends Component<IProps, IState> {
 
       <div>
         <div className="quizHeader">
-          <h2>React Quiz</h2>
+          <h2>{this.state.done ? this.state.title :  "Loading"}</h2>
         </div>
         {this.state.done? (
           <div>
