@@ -5,15 +5,15 @@ import Result from "./components/Results";
 import ReactLoading from "react-loading";
 
 // Create a component that displays the given user's details
-interface IProps { }
+interface IProps {}
 interface IState {
-  quizQuestions: any,
+  quizQuestions: any;
   questionId: number;
   question: string;
-  title: string,
+  title: string;
   answerOptions: object[];
   answer: string;
-  done: boolean,
+  done: boolean;
   correctAnswers: number;
   result: string;
 }
@@ -23,7 +23,7 @@ class App extends Component<IProps, IState> {
 
     this.state = {
       quizQuestions: [],
-      title:"",
+      title: "",
       done: false,
       questionId: 0,
       question: "",
@@ -36,24 +36,31 @@ class App extends Component<IProps, IState> {
   }
 
   async componentDidMount() {
-    fetch("/.netlify/functions/serverless-http/quiz")
-      .then(response => response.json())
-      .then(data => {
-        console.log(data)
+    const endpoint =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:9000/.netlify/functions/serverless-http/quiz"
+        : "/.netlify/functions/serverless-http/quiz";
+    console.log("env is " + process.env.NODE_ENV)
+    console.log("endpoint is " + endpoint)
+    fetch(endpoint)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
         this.setState({
           quizQuestions: data.data.quiz.questions,
-          title: data.data.quiz.name
-        })
-        const shuffledAnswerOptions = this.state.quizQuestions.map((question: { answers: object[]; }) =>
-          this.shuffleArray(question.answers)
+          title: data.data.quiz.name,
+        });
+        const shuffledAnswerOptions = this.state.quizQuestions.map(
+          (question: { answers: object[] }) =>
+            this.shuffleArray(question.answers)
         );
 
         this.setState({
           question: this.state.quizQuestions[0].question,
           answerOptions: shuffledAnswerOptions[0],
-          done:true
+          done: true,
         });
-      })
+      });
   }
 
   shuffleArray(array: object[]) {
@@ -113,7 +120,9 @@ class App extends Component<IProps, IState> {
   getResults() {
     this.setState(() => ({
       result:
-        this.state.correctAnswers + " correct out of " + this.state.quizQuestions.length,
+        this.state.correctAnswers +
+        " correct out of " +
+        this.state.quizQuestions.length,
     }));
   }
 
@@ -138,23 +147,20 @@ class App extends Component<IProps, IState> {
 
   render() {
     return (
-
       <div>
         <div className="quizHeader">
-          <h2>{this.state.done ? this.state.title :  "Loading"}</h2>
+          <h2>{this.state.done ? this.state.title : "Loading"}</h2>
         </div>
-        {this.state.done? (
+        {this.state.done ? (
           <div>
             {this.state.result ? this.renderResult() : this.renderQuiz()}
           </div>
-
-        ) : (<div className="loading">
-          <ReactLoading type={"bars"} color={"#1F2430"} />
-        </div>)}
-
-
+        ) : (
+          <div className="loading">
+            <ReactLoading type={"bars"} color={"#1F2430"} />
+          </div>
+        )}
       </div>
-
     );
   }
 }

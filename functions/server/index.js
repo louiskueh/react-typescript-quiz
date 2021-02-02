@@ -53,7 +53,7 @@ async function getQuiz(token) {
 export default function expressApp(functionName) {
   const app = express()
   const router = express.Router()
-
+  router.use(cors())
   // Set router base path for local dev
   const routerBasePath = process.env.NODE_ENV === 'dev' ? `/${functionName}` : `/.netlify/functions/${functionName}/`
 
@@ -145,18 +145,8 @@ export default function expressApp(functionName) {
   app.use(routerBasePath, router)
 
   // Apply express middlewares
-  router.use(cors())
   router.use(bodyParser.json())
   router.use(bodyParser.urlencoded({ extended: true }))
-  // const { createProxyMiddleware } = require('http-proxy-middleware');
-
-  // app.use(createProxyMiddleware('/.netlify/functions',
-  //   {
-  //     target: 'http://localhost:9000', "pathRewrite": {
-  //       "^/\\.netlify/functions": ""
-  //     }
-  //   }
-  // ));
 
   return app
 }
