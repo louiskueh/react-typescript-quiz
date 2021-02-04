@@ -88,7 +88,7 @@ export default function expressApp(functionName) {
 
   router.get('/quiz', async (req, res) => {
     try {
-      const token = await helper.getAuthToken()
+      const token = await getAuthToken()
       const graphQLData = await getQuiz(token.access_token)
       res.send(graphQLData);
       // res.send("hello")
