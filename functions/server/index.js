@@ -26,6 +26,20 @@ const allItemsQuery = {
     }
     `
 }
+
+function propertyFromQuizzesQuery(property) {
+  return {
+    query: `
+    query {
+      quizzes {
+       ` + property +`
+      }
+    }
+    `}
+}
+
+
+
 // Get a valid Realm user access token to authenticate requests
 async function getAuthToken() {
   console.log("API KEY IS " + API_KEY)
@@ -37,12 +51,12 @@ async function getAuthToken() {
   return res.data
 }
 
-async function getQuiz(token) {
+async function runQuery(token,query) {
   const headers = {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer ' + token
   }
-  let res = await axios.post('https://realm.mongodb.com/api/client/v2.0/app/react-quiz-app-yyduf/graphql', allItemsQuery, {
+  let res = await axios.post('https://realm.mongodb.com/api/client/v2.0/app/react-quiz-app-yyduf/graphql', query, {
     headers: headers
   })
   return res.data
@@ -89,7 +103,7 @@ export default function expressApp(functionName) {
   router.get('/quiz', async (req, res) => {
     try {
       const token = await getAuthToken()
-      const graphQLData = await getQuiz(token.access_token)
+      const graphQLData = await runQuery(token.access_token,allItemsQuery)
       res.send(graphQLData);
       // res.send("hello")
     } catch (err) {
@@ -98,10 +112,11 @@ export default function expressApp(functionName) {
   });
 
   router.get('/quizzes/:property', async (req, res) => {
-    console.log("property is " + req.params.property);
+    console.log("property is " + JSON.stringify(propertyFromQuizzesQuery(req.params.property)))
+    const dynamicPropertyQuery = propertyFromQuizzesQuery(req.params.property)
     try {
       const token = await getAuthToken()
-      const graphQLData = await getQuiz(token.access_token)
+      const graphQLData = await runQuery(token.access_token,dynamicPropertyQuery)
       res.send(graphQLData);
       // res.send("hello")
     } catch (err) {
