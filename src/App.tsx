@@ -3,9 +3,15 @@ import "./App.css";
 import Quiz from "./components/Quiz";
 import Result from "./components/Results";
 import ReactLoading from "react-loading";
+import Dropdown from 'rc-dropdown';
+import Menu, { Item as MenuItem, Divider } from 'rc-menu'
 
+const endpoint =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:9000/.netlify/functions/graphql/"
+    : "/.netlify/functions/graphql/";
 // Create a component that displays the given user's details
-interface IProps {}
+interface IProps { }
 interface IState {
   quizQuestions: any;
   questionId: number;
@@ -16,6 +22,7 @@ interface IState {
   done: boolean;
   correctAnswers: number;
   result: string;
+  quizNames: object[]
 }
 class App extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -31,21 +38,29 @@ class App extends Component<IProps, IState> {
       correctAnswers: 0,
       answer: "",
       result: "",
+      quizNames: []
     };
     this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
   }
 
   async componentDidMount() {
-    const endpoint =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:9000/.netlify/functions/serverless-http/quiz"
-        : "/.netlify/functions/serverless-http/quiz";
+
     console.log("env is " + process.env.NODE_ENV)
     console.log("endpoint is " + endpoint)
-    fetch(endpoint)
+    // fetch data about all the quizzes
+    fetch(endpoint + "quizzes/name")
+      .then(response => response.json())
+      .then(data => {
+        console.log("quiz names" + JSON.stringify(data))
+        this.setState({
+          quizNames: data.quizzes
+        })
+      })
+    // fetch data pertaining to a quiz
+    fetch(endpoint + "quiz")
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         this.setState({
           quizQuestions: data.data.quiz.questions,
           title: data.data.quiz.name,
@@ -125,7 +140,21 @@ class App extends Component<IProps, IState> {
         this.state.quizQuestions.length,
     }));
   }
+  onSelect( key : any ) {
+    console.log(`${key} selected`)
+  }
 
+  onVisibleChange(visible : any) {
+    console.log(visible)
+  }
+  menu = (
+    <Menu onSelect={this.onSelect}>
+      <MenuItem disabled>disabled</MenuItem>
+      <MenuItem key="1">one</MenuItem>
+      <Divider />
+      <MenuItem key="2">two</MenuItem>
+    </Menu>
+  )
   renderQuiz() {
     return (
       <div className="container">
@@ -156,10 +185,24 @@ class App extends Component<IProps, IState> {
             {this.state.result ? this.renderResult() : this.renderQuiz()}
           </div>
         ) : (
-          <div className="loading">
-            <ReactLoading type={"bars"} color={"#1F2430"} />
+            <div className="loading">
+              <ReactLoading type={"bars"} color={"#1F2430"} />
+            </div>
+          )}
+
+        <div style={{ margin: 20 }}>
+          <div style={{ height: 100 }} />
+          <div>
+            <Dropdown
+              trigger={['click']}
+              overlay={this.menu}
+              animation="slide-up"
+              onVisibleChange={this.onVisibleChange}
+            >
+              <button style={{ width: 100 }}>open</button>
+            </Dropdown>
           </div>
-        )}
+        </div>
       </div>
     );
   }
