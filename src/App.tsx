@@ -1,11 +1,9 @@
-import { Component } from "react";
+import React, { Component } from "react";
 import "./App.css";
 import Quiz from "./components/Quiz";
 import Result from "./components/Results";
 import ReactLoading from "react-loading";
-import Dropdown from 'rc-dropdown';
-import Menu, { Item as MenuItem, Divider } from 'rc-menu'
-
+import SelectComponent from "./components/SelectComponent"
 const endpoint =
   process.env.NODE_ENV === "development"
     ? "http://localhost:9000/.netlify/functions/graphql/"
@@ -147,14 +145,7 @@ class App extends Component<IProps, IState> {
   onVisibleChange(visible : any) {
     console.log(visible)
   }
-  menu = (
-    <Menu onSelect={this.onSelect}>
-      <MenuItem disabled>disabled</MenuItem>
-      <MenuItem key="1">one</MenuItem>
-      <Divider />
-      <MenuItem key="2">two</MenuItem>
-    </Menu>
-  )
+
   renderQuiz() {
     return (
       <div className="container">
@@ -190,18 +181,8 @@ class App extends Component<IProps, IState> {
             </div>
           )}
 
-        <div style={{ margin: 20 }}>
-          <div style={{ height: 100 }} />
-          <div>
-            <Dropdown
-              trigger={['click']}
-              overlay={this.menu}
-              animation="slide-up"
-              onVisibleChange={this.onVisibleChange}
-            >
-              <button style={{ width: 100 }}>open</button>
-            </Dropdown>
-          </div>
+        <div>
+            <SelectComponent items={this.state.quizNames}></SelectComponent>
         </div>
       </div>
     );
