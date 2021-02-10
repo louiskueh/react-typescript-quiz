@@ -1,19 +1,19 @@
-import React, { Component } from 'react'
 import Select from 'react-select'
 
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' }
-]
+function convertToSelectObject(object: any) {
+  return { value: object.name, label: object.name }
+}
 
-function SelectComponent (props:selectProps){
+function SelectComponent(props: selectProps) {
+
+  const resultConvert = props.items.map(convertToSelectObject);
   return (
-    <Select options={options} />
+    <Select options={resultConvert} />
   )
 }
 
 type selectProps = {
-  items: object[]
+  items: Array<any>
 };
+
 export default SelectComponent

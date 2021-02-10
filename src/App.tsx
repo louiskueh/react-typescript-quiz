@@ -17,7 +17,7 @@ interface IState {
   title: string;
   answerOptions: object[];
   answer: string;
-  done: boolean;
+  finishQuizData: boolean;
   correctAnswers: number;
   result: string;
   quizNames: object[]
@@ -29,7 +29,7 @@ class App extends Component<IProps, IState> {
     this.state = {
       quizQuestions: [],
       title: "",
-      done: false,
+      finishQuizData: false,
       questionId: 0,
       question: "",
       answerOptions: [],
@@ -49,9 +49,9 @@ class App extends Component<IProps, IState> {
     fetch(endpoint + "quizzes/name")
       .then(response => response.json())
       .then(data => {
-        console.log("quiz names" + JSON.stringify(data))
+        console.log("quiz names" + JSON.stringify(data.data.quizzes))
         this.setState({
-          quizNames: data.quizzes
+          quizNames: data.data.quizzes,
         })
       })
     // fetch data pertaining to a quiz
@@ -71,7 +71,7 @@ class App extends Component<IProps, IState> {
         this.setState({
           question: this.state.quizQuestions[0].question,
           answerOptions: shuffledAnswerOptions[0],
-          done: true,
+          finishQuizData: true,
         });
       });
   }
@@ -138,11 +138,11 @@ class App extends Component<IProps, IState> {
         this.state.quizQuestions.length,
     }));
   }
-  onSelect( key : any ) {
+  onSelect(key: any) {
     console.log(`${key} selected`)
   }
 
-  onVisibleChange(visible : any) {
+  onVisibleChange(visible: any) {
     console.log(visible)
   }
 
@@ -169,21 +169,24 @@ class App extends Component<IProps, IState> {
     return (
       <div>
         <div className="quizHeader">
-          <h2>{this.state.done ? this.state.title : "Loading"}</h2>
+          <h2>{this.state.finishQuizData ? this.state.title : "Loading"}</h2>
         </div>
-        {this.state.done ? (
+        {this.state.finishQuizData ? (
           <div>
-            {this.state.result ? this.renderResult() : this.renderQuiz()}
+            <div>
+              <SelectComponent items={this.state.quizNames}></SelectComponent>
+            </div>
+            <div>
+              {this.state.result ? this.renderResult() : this.renderQuiz()}
+            </div>
+
           </div>
         ) : (
-            <div className="loading">
-              <ReactLoading type={"bars"} color={"#1F2430"} />
-            </div>
-          )}
+          <div className="loading">
+            <ReactLoading type={"bars"} color={"#1F2430"} />
+          </div>
+        )}
 
-        <div>
-            <SelectComponent items={this.state.quizNames}></SelectComponent>
-        </div>
       </div>
     );
   }
