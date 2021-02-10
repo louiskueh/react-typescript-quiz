@@ -15,6 +15,7 @@ const allItemsQuery = {
       quiz {
         _id
         name
+        youtube
         questions {
           question,
           answers {

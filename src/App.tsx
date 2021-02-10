@@ -4,6 +4,8 @@ import Quiz from "./components/Quiz";
 import Result from "./components/Results";
 import ReactLoading from "react-loading";
 import SelectComponent from "./components/SelectComponent"
+import ReactPlayer from 'react-player/youtube'
+
 const endpoint =
   process.env.NODE_ENV === "development"
     ? "http://localhost:9000/.netlify/functions/graphql/"
@@ -20,7 +22,8 @@ interface IState {
   finishQuizData: boolean;
   correctAnswers: number;
   result: string;
-  quizNames: object[]
+  quizNames: object[];
+  youtubeLink:string;
 }
 class App extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -36,15 +39,16 @@ class App extends Component<IProps, IState> {
       correctAnswers: 0,
       answer: "",
       result: "",
-      quizNames: []
+      quizNames: [],
+      youtubeLink: ""
     };
     this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
   }
 
   async componentDidMount() {
 
-    console.log("env is " + process.env.NODE_ENV)
-    console.log("endpoint is " + endpoint)
+    // console.log("env is " + process.env.NODE_ENV)
+    // console.log("endpoint is " + endpoint)
     // fetch data about all the quizzes
     fetch(endpoint + "quizzes/name")
       .then(response => response.json())
@@ -58,10 +62,11 @@ class App extends Component<IProps, IState> {
     fetch(endpoint + "quiz")
       .then((response) => response.json())
       .then((data) => {
-        // console.log(data);
+        console.log(data);
         this.setState({
           quizQuestions: data.data.quiz.questions,
           title: data.data.quiz.name,
+          youtubeLink: data.data.quiz.youtube
         });
         const shuffledAnswerOptions = this.state.quizQuestions.map(
           (question: { answers: object[] }) =>
@@ -169,7 +174,18 @@ class App extends Component<IProps, IState> {
     return (
       <div>
         <div className="quizHeader">
-          <h2>{this.state.finishQuizData ? this.state.title : "Loading"}</h2>
+          {this.state.finishQuizData ? (
+            <div >
+              <h2>  {this.state.title}</h2>
+              <div className="video">
+                <ReactPlayer url={this.state.youtubeLink} controls={true}/>
+              </div>
+            </div>
+
+          ) :   <div className="loading">
+          <ReactLoading type={"bars"} color={"#FFFFFF"} />
+        </div>}
+
         </div>
         {this.state.finishQuizData ? (
           <div>
