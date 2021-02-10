@@ -33,12 +33,30 @@ function propertyFromQuizzesQuery(property) {
     query: `
     query {
       quizzes {
-       ` + property +`
+       ` + property + `
       }
     }
     `}
 }
 
+function getQuiz(quizName) {
+  return {
+    query: `
+    query {
+      quiz(query: {name:"` + quizName +`"}) {
+        _id
+        name
+        questions {
+          question,
+          answers {
+            content
+            type
+          }
+        }
+        youtube
+      }
+    }`}
+}
 
 
 // Get a valid Realm user access token to authenticate requests
@@ -52,7 +70,7 @@ async function getAuthToken() {
   return res.data
 }
 
-async function runQuery(token,query) {
+async function runQuery(token, query) {
   const headers = {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer ' + token
@@ -104,7 +122,7 @@ export default function expressApp(functionName) {
   router.get('/quiz', async (req, res) => {
     try {
       const token = await getAuthToken()
-      const graphQLData = await runQuery(token.access_token,allItemsQuery)
+      const graphQLData = await runQuery(token.access_token, allItemsQuery)
       res.send(graphQLData);
       // res.send("hello")
     } catch (err) {
@@ -112,12 +130,25 @@ export default function expressApp(functionName) {
     }
   });
 
+  router.get('/quiz/:name', async (req, res) => {
+    try {
+      const token = await getAuthToken()
+      const graphQLData = await runQuery(token.access_token, getQuiz(req.params.name))
+      console.log(graphQLData)
+      res.send(graphQLData);
+      // res.send("hello")
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+
   router.get('/quizzes/:property', async (req, res) => {
     console.log("property is " + JSON.stringify(propertyFromQuizzesQuery(req.params.property)))
     const dynamicPropertyQuery = propertyFromQuizzesQuery(req.params.property)
     try {
       const token = await getAuthToken()
-      const graphQLData = await runQuery(token.access_token,dynamicPropertyQuery)
+      const graphQLData = await runQuery(token.access_token, dynamicPropertyQuery)
       res.send(graphQLData);
       // res.send("hello")
     } catch (err) {

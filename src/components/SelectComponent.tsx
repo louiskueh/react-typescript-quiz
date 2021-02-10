@@ -5,9 +5,9 @@ function convertToSelectObject(object:any){
 }
 
 function SelectComponent (props:selectProps){
-  console.log("Select component " + JSON.stringify(props.items))
+  // console.log("Select component " + JSON.stringify(props.items))
   const resultConvert = props.items.map( convertToSelectObject );
-  console.log("result convert is ")
+  // console.log("result convert is ")
   return (
     <Select options={resultConvert} />
   )
