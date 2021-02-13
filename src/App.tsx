@@ -10,6 +10,8 @@ const endpoint =
   process.env.NODE_ENV === "development"
     ? "http://localhost:9000/.netlify/functions/graphql/"
     : "/.netlify/functions/graphql/";
+
+console.log("ENV is " + process.env.NODE_ENV)
 // Create a component that displays the given user's details
 interface IProps {
   match: any;
