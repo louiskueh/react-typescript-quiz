@@ -14,6 +14,7 @@ body {
   margin: 0 auto;
   /* background: #fff; */
   border-radius: 3px;
+  padding: 0.5rem 0rem 30rem ;
 }
 
 ul
@@ -36,7 +37,7 @@ ul
 /* Question Component */
 .question {
   margin: 0;  
-  /* bottom top left right  */
+   /* Top Right Bottom Left */
   padding: 0.5rem 2.5rem 1.5rem 2.5rem;
 }
 .result {

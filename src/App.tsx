@@ -1,11 +1,19 @@
-import { Component } from "react";
+import React, { Component } from "react";
 import "./App.css";
 import Quiz from "./components/Quiz";
 import Result from "./components/Results";
 import ReactLoading from "react-loading";
+import SelectComponent from "./components/SelectComponent"
+import ReactPlayer from 'react-player/youtube'
 
+const endpoint =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:9000/.netlify/functions/graphql/"
+    : "/.netlify/functions/graphql/";
 // Create a component that displays the given user's details
-interface IProps {}
+interface IProps {
+  match: any;
+}
 interface IState {
   quizQuestions: any;
   questionId: number;
@@ -13,9 +21,12 @@ interface IState {
   title: string;
   answerOptions: object[];
   answer: string;
-  done: boolean;
+  finishQuizData: boolean;
   correctAnswers: number;
   result: string;
+  quizNames: object[];
+  youtubeLink: string;
+  currentQuizName: string;
 }
 class App extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -24,31 +35,46 @@ class App extends Component<IProps, IState> {
     this.state = {
       quizQuestions: [],
       title: "",
-      done: false,
+      finishQuizData: false,
       questionId: 0,
       question: "",
       answerOptions: [],
       correctAnswers: 0,
       answer: "",
       result: "",
+      quizNames: [],
+      youtubeLink: "",
+      currentQuizName: props.match.params.name
     };
     this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
+    this.setQuizName = this.setQuizName.bind(this);
   }
 
   async componentDidMount() {
-    const endpoint =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:9000/.netlify/functions/serverless-http/quiz"
-        : "/.netlify/functions/serverless-http/quiz";
-    console.log("env is " + process.env.NODE_ENV)
-    console.log("endpoint is " + endpoint)
-    fetch(endpoint)
+    console.log("quiz name is " + this.state.currentQuizName)
+    console.log("Path param is " + this.state.currentQuizName)
+    // console.log("env is " + process.env.NODE_ENV)
+    // console.log("endpoint is " + endpoint)
+    // fetch data about all the quizzes
+    fetch(endpoint + "quizzes/name")
+      .then(response => response.json())
+      .then(data => {
+        console.log("quiz names" + JSON.stringify(data.data.quizzes))
+        this.setState({
+          quizNames: data.data.quizzes,
+        })
+      })
+    // fetch data pertaining to a quiz
+
+    fetch(endpoint + "quiz/" + this.state.currentQuizName)
       .then((response) => response.json())
+
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         this.setState({
           quizQuestions: data.data.quiz.questions,
           title: data.data.quiz.name,
+          youtubeLink: data.data.quiz.youtube
         });
         const shuffledAnswerOptions = this.state.quizQuestions.map(
           (question: { answers: object[] }) =>
@@ -58,9 +84,10 @@ class App extends Component<IProps, IState> {
         this.setState({
           question: this.state.quizQuestions[0].question,
           answerOptions: shuffledAnswerOptions[0],
-          done: true,
+          finishQuizData: true,
         });
-      });
+      })
+      .catch(error => console.log(error));
   }
 
   shuffleArray(array: object[]) {
@@ -93,9 +120,9 @@ class App extends Component<IProps, IState> {
     });
   }
   setUserAnswer(answer: string) {
-    this.setState(() => ({
+    this.setState({
       answer: answer,
-    }));
+    });
   }
 
   handleAnswerSelected(event: React.ChangeEvent<HTMLInputElement>) {
@@ -126,6 +153,13 @@ class App extends Component<IProps, IState> {
     }));
   }
 
+  setQuizName(quizName: any) {
+    this.setState({
+      currentQuizName: quizName
+    })
+
+  }
+
   renderQuiz() {
     return (
       <div className="container">
@@ -149,17 +183,40 @@ class App extends Component<IProps, IState> {
     return (
       <div>
         <div className="quizHeader">
-          <h2>{this.state.done ? this.state.title : "Loading"}</h2>
+          <div className="select">
+            <SelectComponent items={this.state.quizNames} currentQuiz = {this.state.currentQuizName}></SelectComponent>
+          </div>
+          {this.state.finishQuizData ? (
+            <div >
+
+
+              <div className="video">
+                <ReactPlayer url={this.state.youtubeLink} controls={true} />
+              </div>
+              <div>
+
+              </div>
+            </div>
+
+          ) : <div className="loading">
+            <ReactLoading type={"bars"} color={"#FFFFFF"} />
+          </div>}
+
         </div>
-        {this.state.done ? (
+        {this.state.finishQuizData ? (
           <div>
-            {this.state.result ? this.renderResult() : this.renderQuiz()}
+
+            <div>
+              {this.state.result ? this.renderResult() : this.renderQuiz()}
+            </div>
+
           </div>
         ) : (
           <div className="loading">
             <ReactLoading type={"bars"} color={"#1F2430"} />
           </div>
         )}
+
       </div>
     );
   }
