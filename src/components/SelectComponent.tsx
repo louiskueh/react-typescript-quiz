@@ -1,16 +1,19 @@
 import Select from 'react-select'
+
+
 import { useHistory,withRouter ,RouteComponentProps} from "react-router-dom";
 function convertToSelectObject(object:any){
   return {value: object.name, label: object.name}
 }
 
-var currentQuiz = {value: "", label:"Please select a quiz"}
+var currentQuiz = localStorage.getItem("quizName") == null ? "Please choose a quiz " : localStorage.getItem("quizName")!.slice(1, -1);
 function SelectComponent (props:selectProps){
   const history = useHistory();
   function onChange(o:any){
     console.log("INPUT IS " + JSON.stringify(o))
     history.push("/"+ o.value);
-    currentQuiz.label = o.label
+
+    localStorage.setItem('quizName',JSON.stringify(o.value));
     window.location.reload();
   }
   // console.log("Select component " + JSON.stringify(props.items))
@@ -18,7 +21,7 @@ function SelectComponent (props:selectProps){
   // console.log("result convert is ")
   return (
     <Select 
-    defaultValue={currentQuiz}
+    defaultValue={{value:"",label:currentQuiz}}
     onChange={onChange}
     options={resultConvert} />
   )
