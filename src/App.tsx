@@ -67,29 +67,30 @@ class App extends Component<IProps, IState> {
         })
       })
     // fetch data pertaining to a quiz
+    if (this.state.currentQuizName != null) {
+      fetch(endpoint + "quiz/" + this.state.currentQuizName)
+        .then((response) => response.json())
 
-    fetch(endpoint + "quiz/" + this.state.currentQuizName)
-      .then((response) => response.json())
+        .then((data) => {
+          // console.log(data);
+          this.setState({
+            quizQuestions: data.data.quiz.questions,
+            title: data.data.quiz.name,
+            youtubeLink: data.data.quiz.youtube
+          });
+          const shuffledAnswerOptions = this.state.quizQuestions.map(
+            (question: { answers: object[] }) =>
+              this.shuffleArray(question.answers)
+          );
 
-      .then((data) => {
-        // console.log(data);
-        this.setState({
-          quizQuestions: data.data.quiz.questions,
-          title: data.data.quiz.name,
-          youtubeLink: data.data.quiz.youtube
-        });
-        const shuffledAnswerOptions = this.state.quizQuestions.map(
-          (question: { answers: object[] }) =>
-            this.shuffleArray(question.answers)
-        );
-
-        this.setState({
-          question: this.state.quizQuestions[0].question,
-          answerOptions: shuffledAnswerOptions[0],
-          finishQuizData: true,
-        });
-      })
-      .catch(error => console.log(error));
+          this.setState({
+            question: this.state.quizQuestions[0].question,
+            answerOptions: shuffledAnswerOptions[0],
+            finishQuizData: true,
+          });
+        })
+        .catch(error => console.log(error));
+    }
   }
 
   shuffleArray(array: object[]) {
@@ -186,7 +187,7 @@ class App extends Component<IProps, IState> {
       <div>
         <div className="quizHeader">
           <div className="select">
-            <SelectComponent items={this.state.quizNames} currentQuiz = {this.state.currentQuizName}></SelectComponent>
+            <SelectComponent items={this.state.quizNames} currentQuiz={this.state.currentQuizName}></SelectComponent>
           </div>
           {this.state.finishQuizData ? (
             <div >
