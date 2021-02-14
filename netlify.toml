@@ -5,3 +5,7 @@
   publish = "build"
   # functions build directory
   functions = "functions-build"
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
