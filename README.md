@@ -3,7 +3,7 @@
  
 Designed, developed & deployed a MERN stack app that displays quizzes related to Youtube videos created
 
-Dynamic switching between multiple quizzes, deployed via Netlify & MongoDB Atlas
+Dynamic switching between multiple quizzes, deployed via Netlify & MongoDB Atlas 
 
 **Mongodb, Graphql | Node, Express | React | Netlify, Mongodb Atlas**
 ![MERN stack](https://www.mindinventory.com/blog/wp-content/uploads/2021/06/mean-stack.png)
